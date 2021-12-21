@@ -6,10 +6,11 @@ const makeGalleryItemMarkup = ({ preview, original, description }) => {
  <div class="gallery__item">
   <a class="gallery__link" href="${original}">
     <img
-      class="gallery__image"
-      src="${preview}"
-      data-source="${original}"
-      alt="${description}"
+    style="display:block"
+    class="gallery__image"
+    src="${preview}"
+    data-source="${original}"
+    alt="${description}"
     />
   </a>
 </div>
@@ -50,7 +51,7 @@ function onGalleryClick(event) {
 function modalShow(src) {
   const instance = basicLightbox.create(`
     <div class="modal">
-        <img src="${src}" style="height:100vh"></img>
+        <img src="${src}" style="height:100vh display:block"></img>
     </div>
 `);
   instance.show(() => {
