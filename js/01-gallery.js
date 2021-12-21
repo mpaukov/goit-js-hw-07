@@ -16,21 +16,22 @@ const makeGalleryItemMarkup = ({ preview, original, description }) => {
     `;
 };
 
+const link = document.createElement('link');
+link.rel = 'stylesheet';
+link.href =
+  'https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.css';
+document.head.appendChild(link);
+
+const script = document.createElement('script');
+script.src =
+  'https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.js';
+document.body.appendChild(script);
+
 const makeGalleryMarkup = galleryItems.map(makeGalleryItemMarkup).join('');
 
 const galleryElements = document.querySelector('.gallery');
 
-document
-  .querySelector('link[href="css/styles.css"]')
-  .insertAdjacentHTML(
-    'beforebegin',
-    `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.css"/>`,
-  );
 galleryElements.insertAdjacentHTML('beforeend', makeGalleryMarkup);
-galleryElements.insertAdjacentHTML(
-  'afterend',
-  `<script src="https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.js"></script>`,
-);
 
 const galleryLinkElements = document.querySelectorAll('.gallery__link');
 galleryLinkElements.forEach(galleryLinkElement => {
@@ -43,4 +44,20 @@ function onGalleryClick(event) {
   if (event.target.nodeName !== 'IMG') {
     return;
   }
+  modalShow(event.target.dataset.source);
+}
+
+function modalShow(src) {
+  const instance = basicLightbox.create(`
+    <div class="modal">
+        <img src="${src}" style="height:100vh"></img>
+    </div>
+`);
+  instance.show(() => {
+    window.addEventListener('keydown', function onEscClick(event) {
+      if (event.code === 'Escape') {
+        instance.close(window.removeEventListener('click', onEscClick));
+      }
+    });
+  });
 }
