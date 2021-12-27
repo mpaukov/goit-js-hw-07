@@ -17,27 +17,11 @@ const makeGalleryItemMarkup = ({ preview, original, description }) => {
     `;
 };
 
-const link = document.createElement('link');
-link.rel = 'stylesheet';
-link.href =
-  'https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.css';
-document.head.appendChild(link);
-
-const script = document.createElement('script');
-script.src =
-  'https://cdn.jsdelivr.net/npm/basiclightbox@5.0.4/dist/basicLightbox.min.js';
-document.body.appendChild(script);
-
 const makeGalleryMarkup = galleryItems.map(makeGalleryItemMarkup).join('');
 
 const galleryElements = document.querySelector('.gallery');
 
 galleryElements.insertAdjacentHTML('beforeend', makeGalleryMarkup);
-
-const galleryLinkElements = document.querySelectorAll('.gallery__link');
-galleryLinkElements.forEach(galleryLinkElement => {
-  galleryLinkElement.addEventListener('click', e => e.preventDefault());
-});
 
 galleryElements.addEventListener('click', onGalleryClick);
 
@@ -45,22 +29,39 @@ function onGalleryClick(event) {
   if (event.target.nodeName !== 'IMG') {
     return;
   }
+  event.preventDefault();
   modalShow(event.target.dataset.source);
 }
-
+let instance;
 function modalShow(src) {
-  const instance = basicLightbox.create(`
+  instance = basicLightbox.create(
+    `
     <div class="modal">
-        <img src="${src}" style="height:100vh display:block"></img>
+        <img src="${src}" style="height:100vh; display:block"></img>
     </div>
-`);
-  instance.show(() => {
-    window.addEventListener('keydown', function onEscClick(event) {
-      if (event.code === 'Escape') {
-        instance.close(() => {
-          window.removeEventListener('keydown', onEscClick);
-        });
-      }
-    });
-  });
+`,
+    {
+      onShow: instance => {
+        addListener();
+      },
+      onClose: instance => {
+        removeListener();
+      },
+    },
+  );
+  instance.show();
+}
+
+function addListener() {
+  window.addEventListener('keydown', onEscClick);
+}
+
+function onEscClick(event) {
+  if (event.code === 'Escape') {
+    instance.close();
+  }
+}
+
+function removeListener() {
+  window.removeEventListener('keydown', onEscClick);
 }
