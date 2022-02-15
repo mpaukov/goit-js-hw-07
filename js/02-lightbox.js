@@ -12,8 +12,7 @@ const makeGalleryItemMarkup = ({ preview, original, description }) => {
     alt="${description}"
     />
   </a>
-  </li>
-  `;
+  </li>`;
 };
 
 const makeGalleryMarkup = galleryItems.map(makeGalleryItemMarkup).join('');
